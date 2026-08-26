@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilih Kursi - BusGo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #f5f7fa; }
+        .navbar {
+            background: white;
+            padding: 15px 50px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h2 { color: #667eea; cursor: pointer; }
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .bus-info {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+        .bus-info h3 { color: #333; margin-bottom: 5px; }
+        .bus-info p { color: #666; }
+        .seat-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #555;
+        }
+        .seat-box {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            border: 2px solid #ddd;
+        }
+        .available { background: white; }
+        .selected { background: #667eea; border-color: #667eea; }
+        .occupied { background: #e0e0e0; border-color: #ccc; }
+        
+        .bus-layout {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .driver-seat {
+            background: #f0f0f0;
+            padding: 15px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #666;
+        }
+        .seat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            padding: 20px;
+        }
+        .seat {
+            aspect-ratio: 1;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            background: white;
+            color: #333;
+        }
+        .seat:hover:not(.occupied) {
+            border-color: #667eea;
+            transform: scale(1.1);
+        }
+        .seat.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .seat.occupied {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+            border-color: #ccc;
+        }
+        .aisle {
+            grid-column: 3;
+            grid-row: span 1;
+        }
+        .summary {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+        .selected-seats {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+        .seat-tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .total-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: #e74c3c;
+            margin: 15px 0;
+        }
+        .btn-lanjut {
+            width: 100%;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-lanjut:hover:not(:disabled) {
+            background: #5a6fd6;
+            transform: translateY(-2px);
+        }
+        .btn-lanjut:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h2 onclick="window.location.href='beranda.html'">🚌 BusGo</h2>
+    </nav>
+
+    <div class="container">
+        <div class="bus-info">
+            <h3 id="busName">-</h3>
+            <p id="busRoute">-</p>
+        </div>
+
+        <div class="seat-container">
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="seat-box available"></div>
+                    Tersedia
+                </div>
+                <div class="legend-item">
+                    <div class="seat-box selected"></div>
+                    Dipilih
+                </div>
+                <div class="legend-item">
+                    <div class="seat-box occupied"></div>
+                    Terisi
+                </div>
+            </div>
+
+            <div class="bus-layout">
+                <div class="driver-seat">🧑‍✈️ Sopir</div>
+                <div class="seat-grid" id="seatGrid">
+                    <!-- Seats generated by JS -->
+                </div>
+            </div>
+
+            <div class="summary">
+                <h4>Kursi Dipilih:</h4>
+                <div class="selected-seats" id="selectedSeats">
+                    <span style="color:#999;font-size:14px;">Belum memilih kursi</span>
+                </div>
+                <div class="total-price" id="totalPrice">Rp 0</div>
+                <button class="btn-lanjut" id="btnLanjut" disabled onclick="lanjutPembayaran()">
+                    Lanjut ke Pembayaran
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const bus = JSON.parse(localStorage.getItem('busSelected'));
+        const search = JSON.parse(localStorage.getItem('busSearch'));
+        if(!bus || !search) window.location.href = 'beranda.html';
+
+        document.getElementById('busName').textContent = `${bus.nama} - ${bus.kelas}`;
+        document.getElementById('busRoute').textContent = `${search.dari} → ${search.ke} | ${search.tanggal}`;
+
+        const maxSeats = parseInt(search.penumpang);
+        const hargaPerKursi = bus.harga;
+        let selectedSeats = [];
+
+        // Generate seats (40 seats, some occupied randomly)
+        const occupiedSeats = [3, 7, 12, 15, 22, 28, 33, 38];
+        
+        function renderSeats() {
+            const grid = document.getElementById('seatGrid');
+            let html = '';
+            
+            for(let i = 1; i <= 40; i++) {
+                const isOccupied = occupiedSeats.includes(i);
+                const isSelected = selectedSeats.includes(i);
+                
+                if(i % 4 === 3) {
+                    html += `<div class="aisle"></div>`;
+                }
+                
+                html += `
+                    <div class="seat ${isOccupied ? 'occupied' : ''} ${isSelected ? 'selected' : ''}" 
+                         onclick="toggleSeat(${i}, ${isOccupied})"
+                         ${isOccupied ? 'title="Terisi"' : ''}>
+                        ${i}
+                    </div>
+                `;
+            }
+            grid.innerHTML = html;
+        }
+
+        function toggleSeat(seatNum, isOccupied) {
+            if(isOccupied) return;
+            
+            if(selectedSeats.includes(seatNum)) {
+                selectedSeats = selectedSeats.filter(s => s !== seatNum);
+            } else {
+                if(selectedSeats.length >= maxSeats) {
+                    alert(`Maksimal ${maxSeats} kursi dapat dipilih`);
+                    return;
+                }
+                selectedSeats.push(seatNum);
+            }
+            updateSummary();
+            renderSeats();
+        }
+
+        function updateSummary() {
+            const container = document.getElementById('selectedSeats');
+            const btn = document.getElementById('btnLanjut');
+            
+            if(selectedSeats.length === 0) {
+                container.innerHTML = '<span style="color:#999;font-size:14px;">Belum memilih kursi</span>';
+                btn.disabled = true;
+            } else {
+                container.innerHTML = selectedSeats.map(s => 
+                    `<span class="seat-tag">Kursi ${s}</span>`
+                ).join('');
+                btn.disabled = false;
+            }
+            
+            const total = selectedSeats.length * hargaPerKursi;
+            document.getElementById('totalPrice').textContent = 
+                `Rp ${total.toLocaleString('id-ID')}`;
+        }
+
+        function lanjutPembayaran() {
+            const bookingData = {
+                bus: bus,
+                search: search,
+                kursi: selectedSeats,
+                totalHarga: selectedSeats.length * hargaPerKursi
+            };
+            localStorage.setItem('busBooking', JSON.stringify(bookingData));
+            window.location.href = 'pembayaran.html';
+        }
+
+        renderSeats();
+    </script>
+</body>
+</html>

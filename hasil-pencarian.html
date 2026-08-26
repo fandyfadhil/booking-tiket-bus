@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasil Pencarian - BusGo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #f5f7fa; }
+        .navbar {
+            background: white;
+            padding: 15px 50px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h2 { color: #667eea; cursor: pointer; }
+        .search-info {
+            background: white;
+            padding: 20px 50px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .route {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+        }
+        .route span { color: #667eea; }
+        .date-info { color: #666; margin-top: 5px; }
+        .btn-ubah {
+            background: #f0f0f0;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .bus-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 25px;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+        .bus-card:hover { transform: translateX(5px); }
+        .bus-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .bus-type {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .bus-details {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+        .bus-details span {
+            background: #f0f0f0;
+            padding: 5px 12px;
+            border-radius: 6px;
+        }
+        .time-info {
+            text-align: center;
+        }
+        .time {
+            font-size: 22px;
+            font-weight: 700;
+            color: #333;
+        }
+        .duration {
+            font-size: 13px;
+            color: #888;
+            margin-top: 3px;
+        }
+        .price-section {
+            text-align: right;
+        }
+        .price {
+            font-size: 24px;
+            font-weight: 700;
+            color: #e74c3c;
+        }
+        .price-unit { font-size: 14px; color: #888; }
+        .btn-pilih {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        .btn-pilih:hover {
+            background: #5a6fd6;
+            transform: scale(1.05);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #666;
+        }
+        .empty-state .icon { font-size: 60px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h2 onclick="window.location.href='beranda.html'">🚌 BusGo</h2>
+    </nav>
+
+    <div class="search-info">
+        <div>
+            <div class="route">
+                <span id="dari">Jakarta</span> → <span id="ke">Bandung</span>
+            </div>
+            <div class="date-info">
+                <span id="tanggal">-</span> | <span id="penumpang">-</span> Penumpang
+            </div>
+        </div>
+        <button class="btn-ubah" onclick="window.location.href='beranda.html'">Ubah Pencarian</button>
+    </div>
+
+    <div class="container" id="busList">
+        <!-- Bus list akan di-render di sini -->
+    </div>
+
+    <script>
+        const searchData = JSON.parse(localStorage.getItem('busSearch'));
+        if(!searchData) window.location.href = 'beranda.html';
+
+        document.getElementById('dari').textContent = searchData.dari;
+        document.getElementById('ke').textContent = searchData.ke;
+        document.getElementById('tanggal').textContent = new Date(searchData.tanggal).toLocaleDateString('id-ID', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+        document.getElementById('penumpang').textContent = searchData.penumpang;
+
+        // Data bus dummy
+        const buses = [
+            {
+                id: 1,
+                nama: 'Sinar Jaya',
+                kelas: 'Executive Class',
+                fasilitas: ['AC', 'Toilet', 'WiFi', 'Snack'],
+                berangkat: '06:00',
+                sampai: '10:30',
+                durasi: '4j 30m',
+                harga: 180000,
+                kursiTersedia: 32
+            },
+            {
+                id: 2,
+                nama: 'Lorena',
+                kelas: 'Super Executive',
+                fasilitas: ['AC', 'Toilet', 'WiFi', 'Snack', 'Selimut'],
+                berangkat: '08:00',
+                sampai: '12:15',
+                durasi: '4j 15m',
+                harga: 220000,
+                kursiTersedia: 24
+            },
+            {
+                id: 3,
+                nama: 'Pahala Kencana',
+                kelas: 'Business Class',
+                fasilitas: ['AC', 'Toilet', 'WiFi'],
+                berangkat: '14:00',
+                sampai: '18:45',
+                durasi: '4j 45m',
+                harga: 150000,
+                kursiTersedia: 40
+            },
+            {
+                id: 4,
+                nama: 'Harapan Jaya',
+                kelas: 'Executive Class',
+                fasilitas: ['AC', 'Toilet', 'WiFi', 'Snack', 'USB Port'],
+                berangkat: '20:00',
+                sampai: '00:30',
+                durasi: '4j 30m',
+                harga: 195000,
+                kursiTersedia: 28
+            }
+        ];
+
+        function renderBuses() {
+            const container = document.getElementById('busList');
+            if(buses.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">😕</div>
+                        <h3>Tidak ada bus ditemukan</h3>
+                        <p>Coba ubah pencarian Anda</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = buses.map(bus => `
+                <div class="bus-card">
+                    <div>
+                        <div class="bus-name">${bus.nama}</div>
+                        <div class="bus-type">${bus.kelas}</div>
+                        <div class="bus-details">
+                            ${bus.fasilitas.map(f => `<span>${f}</span>`).join('')}
+                            <span style="background:#e3f2fd;color:#1976d2;">${bus.kursiTersedia} Kursi</span>
+                        </div>
+                    </div>
+                    <div class="time-info">
+                        <div class="time">${bus.berangkat}</div>
+                        <div class="duration">⏱ ${bus.durasi}</div>
+                        <div class="time">${bus.sampai}</div>
+                    </div>
+                    <div class="price-section">
+                        <div class="price">Rp ${bus.harga.toLocaleString('id-ID')}</div>
+                        <div class="price-unit">/orang</div>
+                        <button class="btn-pilih" onclick="pilihBus(${bus.id})">Pilih</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function pilihBus(busId) {
+            const bus = buses.find(b => b.id === busId);
+            localStorage.setItem('busSelected', JSON.stringify(bus));
+            window.location.href = 'pilih-kursi.html';
+        }
+
+        renderBuses();
+    </script>
+</body>
+</html>

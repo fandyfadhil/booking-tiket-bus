@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beranda - BusGo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #f5f7fa; }
+        .navbar {
+            background: white;
+            padding: 15px 50px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h2 { color: #667eea; }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #333;
+        }
+        .logout {
+            color: #e74c3c;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 60px 50px;
+            text-align: center;
+            color: white;
+        }
+        .hero h1 { font-size: 36px; margin-bottom: 10px; }
+        .search-box {
+            max-width: 900px;
+            margin: -40px auto 50px;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .search-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            align-items: end;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+        }
+        .btn-cari {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        .btn-cari:hover {
+            background: #5a6fd6;
+            transform: translateY(-2px);
+        }
+        .features {
+            max-width: 1100px;
+            margin: 0 auto 50px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            padding: 0 20px;
+        }
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+        .feature-card .icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+        .feature-card h3 { color: #333; margin-bottom: 10px; }
+        .feature-card p { color: #666; }
+        @media (max-width: 768px) {
+            .search-grid { grid-template-columns: 1fr; }
+            .features { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h2>🚌 BusGo</h2>
+        <div class="user-info">
+            <span id="userName">user</span>
+            <a class="logout" onclick="logout()">Keluar</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <h1>Mau Kemana Hari Ini?</h1>
+        <p>Pesan tiket bus dengan mudah, cepat, dan aman</p>
+    </div>
+
+    <div class="search-box">
+        <form id="searchForm">
+            <div class="search-grid">
+                <div class="form-group">
+                    <label>Dari</label>
+                    <select id="dari" required>
+                        <option value="">Pilih Kota Asal</option>
+                        <option value="Jakarta">Jakarta</option>
+                        <option value="Bandung">Bandung</option>
+                        <option value="Surabaya">Surabaya</option>
+                        <option value="Yogyakarta">Yogyakarta</option>
+                        <option value="Semarang">Semarang</option>
+                        <option value="Malang">Malang</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Ke</label>
+                    <select id="ke" required>
+                        <option value="">Pilih Kota Tujuan</option>
+                        <option value="Jakarta">Jakarta</option>
+                        <option value="Bandung">Bandung</option>
+                        <option value="Surabaya">Surabaya</option>
+                        <option value="Yogyakarta">Yogyakarta</option>
+                        <option value="Semarang">Semarang</option>
+                        <option value="Malang">Malang</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Tanggal Berangkat</label>
+                    <input type="date" id="tanggal" required>
+                </div>
+                <div class="form-group">
+                    <label>Penumpang</label>
+                    <select id="penumpang">
+                        <option value="1">1 Penumpang</option>
+                        <option value="2">2 Penumpang</option>
+                        <option value="3">3 Penumpang</option>
+                        <option value="4">4 Penumpang</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn-cari" style="margin-top: 20px;">🔍 Cari Tiket</button>
+        </form>
+    </div>
+
+    <div class="features">
+        <div class="feature-card">
+            <div class="icon">⚡</div>
+            <h3>Cepat & Mudah</h3>
+            <p>Pesan tiket hanya dalam hitungan menit tanpa ribet</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon">🔒</div>
+            <h3>Aman & Terpercaya</h3>
+            <p>Transaksi aman dengan berbagai metode pembayaran</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon">💰</div>
+            <h3>Harga Terbaik</h3>
+            <p>Dapatkan harga tiket termurah setiap hari</p>
+        </div>
+    </div>
+
+    <script>
+        // Cek login
+        const userData = JSON.parse(localStorage.getItem('busUser'));
+        if(!userData) window.location.href = 'login.html';
+        else document.getElementById('userName').textContent = userData.nama;
+
+        // Set min date = today
+        document.getElementById('tanggal').min = new Date().toISOString().split('T')[0];
+
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const searchData = {
+                dari: document.getElementById('dari').value,
+                ke: document.getElementById('ke').value,
+                tanggal: document.getElementById('tanggal').value,
+                penumpang: document.getElementById('penumpang').value
+            };
+            if(searchData.dari === searchData.ke) {
+                alert('Kota asal dan tujuan tidak boleh sama!');
+                return;
+            }
+            localStorage.setItem('busSearch', JSON.stringify(searchData));
+            window.location.href = 'hasil-pencarian.html';
+        });
+
+        function logout() {
+            localStorage.removeItem('busUser');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
